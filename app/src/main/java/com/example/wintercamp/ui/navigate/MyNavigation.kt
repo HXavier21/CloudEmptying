@@ -1,7 +1,7 @@
 package com.example.wintercamp.ui.navigate
 
 import android.util.Log
-import androidx.compose.material.icons.Icons
+import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -10,9 +10,11 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.wintercamp.data.SelfEmptyingViewModel
-import com.example.wintercamp.data.WoodenFishViewModel
+import com.example.wintercamp.App
+import com.example.wintercamp.questionnaire.Decode
+import com.example.wintercamp.questionnaire.Encode
 import com.example.wintercamp.questionnaire.QuizViewModel
+import com.example.wintercamp.questionnaire.obj
 import com.example.wintercamp.questionnaire.screen.FinishScreen
 import com.example.wintercamp.questionnaire.screen.QuizScreen
 import com.example.wintercamp.ui.screen.DeepBreathScreen
@@ -30,6 +32,8 @@ fun MyNavigation(
     quizViewModel: QuizViewModel = viewModel(),
     startDestination: String = RouteName.Beginning_Screen
 ) {
+    val kv = MMKV.defaultMMKV()
+    val viewState by quizViewModel.stateFlow.collectAsState()
     NavHost(
         navController = navController,
         startDestination = startDestination
@@ -56,12 +60,19 @@ fun MyNavigation(
         }
 
         composable(RouteName.Self_Emptying_Screen) {
+            Log.d(TAG, Encode(obj))
             SelfEmptyingScreen(
                 onNavigateToWoodenFishScreen = {
                     navController.navigate(RouteName.Wooden_Fish_Screen)
                 },
                 onNavigateToQuestionnaire = {
-                    quizViewModel.questionInit()
+                    quizViewModel.questionChange(
+                        questions = Decode(
+                            kv.decodeString("json") ?: ""
+                        )
+                    )
+                    Log.d(TAG, Decode(kv.decodeString("json")?:"").toString())
+                    Log.d(TAG, viewState.questions.toString())
                     navController.navigate(RouteName.Quiz_Screen)
                 },
                 onNavigateToHiddenScreen = {

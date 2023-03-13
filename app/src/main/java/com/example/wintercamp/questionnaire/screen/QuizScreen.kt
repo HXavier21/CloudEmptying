@@ -1,5 +1,6 @@
 package com.example.wintercamp.questionnaire.screen
 
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -32,14 +33,16 @@ import com.example.wintercamp.questionnaire.component.MultipleChoiceOptionItem
 import com.example.wintercamp.questionnaire.component.SingleChoiceOptionItem
 import com.example.wintercamp.ui.theme.WinterCampTheme
 
+private const val TAG = "QuizScreen"
+
 @Composable
 fun QuizScreen(
     quizViewModel: QuizViewModel = viewModel(),
-    navController: NavController = rememberNavController(),
     onNavigateToEmptying: () -> Unit = {},
     onNavigateToFinish: () -> Unit = {}
 ) {
     val viewState by quizViewModel.stateFlow.collectAsState()
+    Log.d(TAG, viewState.questions.toString())
     viewState.run {
         QuizScreenImpl(
             index = index + 1,

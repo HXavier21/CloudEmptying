@@ -1,14 +1,17 @@
 package com.example.wintercamp.questionnaire
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
+private const val TAG = "QuizViewModel"
+
 class QuizViewModel : ViewModel() {
     data class QuizViewState(
         val index: Int = 0,
-        val questions: List<Question> = obj,
+        val questions: List<Question> = emptyList(),
         val topic: String = "Fruit Preference"
     )
 
@@ -29,7 +32,8 @@ class QuizViewModel : ViewModel() {
         mutableStateFlow.update { it.copy(index = it.index - 1) }
     }
 
-    fun questionInit() {
-        mutableStateFlow.update { it.copy(questions = obj) }
+    fun questionChange(questions: List<Question>) {
+        mutableStateFlow.update { it.copy(questions = questions) }
+        Log.d(TAG, "questionChange:Start ")
     }
 }
