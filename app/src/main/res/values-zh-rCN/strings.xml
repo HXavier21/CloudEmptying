@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">云放空</string>
+    <string name="merit">功德</string>
+    <string name="wooden_fish">木鱼</string>
+    <string name="self_emptying_online">云放空</string>
+    <string name="bubble">气泡</string>
+    <string name="input_to_find_yourself">输入文字找自己…</string>
+    <string name="send">发送</string>
+    <string name="your_name">你的昵称：</string>
+    <string name="move_up_down_left_right_swell_wink">移动/向上/向下/向左/向右/我膨胀了/眨眼/…</string>
+    <string name="i_am_winking">眨眨眼</string>
+    <string name="i_am_swelling">我膨胀了</string>
+    <string name="go_up">向上</string>
+    <string name="go_down">向下</string>
+    <string name="go_left">向左</string>
+    <string name="go_right">向右</string>
+    <string name="move">移动</string>
+    <string name="hello_everyone">大家好！</string>
+    <string name="deep_breath">深呼吸</string>
+    <string name="merit_counter">功德计数器</string>
+    <string name="start">开始</string>
+    <string name="inhale">吸气</string>
+    <string name="exhale">呼气</string>
+    <string name="end">结束</string>
+    <string name="answer">回答</string>
+    <string name="previous">上一步</string>
+    <string name="next">下一步</string>
+    <string name="progress_indicator_text">第%d题（共%d题）</string>
+    <string name="blank_fill">填空题</string>
+    <string name="multiple_choice">多选题</string>
+    <string name="single_choice">单选题</string>
+    <string name="back_to_home">回到云放空</string>
+    <string name="accomplished">完成！</string>
+    <string name="thank_you_for_your_feedback">感谢您的反馈！</string>
+    <string name="emptying_a_cloud">"  放空\n一朵云"</string>
+    <string name="accumulate_cyber_merits_meet_with_miku">"积赛博功德\n见初音未来"</string>
+    <string name="find_it_try_to_poke">找到了！戳戳看？</string>
+</resources>
