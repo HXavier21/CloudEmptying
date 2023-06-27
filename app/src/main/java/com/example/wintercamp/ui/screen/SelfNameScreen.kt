@@ -1,6 +1,7 @@
 package com.example.wintercamp.ui.screen
 
 import android.os.Build
+import android.util.Log
 import android.view.LayoutInflater
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
@@ -55,6 +56,7 @@ import com.example.wintercamp.MainActivity
 import com.example.wintercamp.R
 import com.example.wintercamp.data.KvKey
 import com.example.wintercamp.data.SelfNameViewModel
+import com.example.wintercamp.network.HttpUtil
 import com.example.wintercamp.questionnaire.component.CustomText
 import com.example.wintercamp.ui.component.MyTextField
 import com.example.wintercamp.ui.theme.WinterCampTheme
@@ -63,6 +65,12 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import okhttp3.Call
+import okhttp3.Callback
+import okhttp3.Response
+import java.io.IOException
+
+private const val TAG = "SelfNameScreen"
 
 @Preview
 @Composable
@@ -140,12 +148,37 @@ fun SelfNameScreen(
                                     Toast
                                         .makeText(
                                             context,
-                                            "Please input words",
+                                            "Please input something",
+                                            Toast.LENGTH_SHORT
+                                        )
+                                        .show()
+                                else if (value.length > 26)
+                                    Toast
+                                        .makeText(
+                                            context,
+                                            "That's too long",
                                             Toast.LENGTH_SHORT
                                         )
                                         .show()
                                 else
                                     coroutineScope.launch {
+                                        HttpUtil.sendOkHttpRequest(
+                                            "http://192.168.105.157:11454/users",
+                                            object :
+                                                Callback {
+                                                override fun onFailure(call: Call, e: IOException) {
+                                                    Log.d(TAG, e.toString())
+                                                }
+
+                                                override fun onResponse(
+                                                    call: Call,
+                                                    response: Response
+                                                ) {
+                                                    val responseData = response.body?.toString()
+                                                    Log.d(TAG, responseData.toString())
+                                                }
+
+                                            })
                                         kv.encode(KvKey.NAME, value)
                                         complete = true
                                         delay(1500)

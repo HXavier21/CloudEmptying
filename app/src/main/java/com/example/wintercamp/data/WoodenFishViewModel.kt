@@ -1,16 +1,11 @@
 package com.example.wintercamp.data
 
 import android.net.Uri
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
-import com.example.wintercamp.App
 import com.example.wintercamp.App.Companion.context
 import com.example.wintercamp.R
-import com.example.wintercamp.ui.layout.CircleOnClick
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
-import com.google.android.exoplayer2.Player.REPEAT_MODE_ALL
-import com.google.android.exoplayer2.ui.StyledPlayerView
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update

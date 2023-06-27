@@ -1,16 +1,18 @@
 package com.example.wintercamp.ui.navigate
 
-import android.util.Log
+import android.net.Uri
 import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.core.content.contentValuesOf
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.wintercamp.App
+import com.example.wintercamp.data.KvKey
 import com.example.wintercamp.questionnaire.Decode
 import com.example.wintercamp.questionnaire.Encode
 import com.example.wintercamp.questionnaire.QuizViewModel
@@ -23,16 +25,17 @@ import com.example.wintercamp.ui.screen.SelfNameScreen
 import com.example.wintercamp.ui.screen.SpecialScreen
 import com.example.wintercamp.ui.screen.WoodenFishScreen
 import com.tencent.mmkv.MMKV
+import java.lang.Exception
 
 private const val TAG = "MyNavigation"
 
 @Composable
 fun MyNavigation(
     navController: NavHostController = rememberNavController(),
-    quizViewModel: QuizViewModel = viewModel(),
     startDestination: String = RouteName.Beginning_Screen
 ) {
     val kv = MMKV.defaultMMKV()
+    val quizViewModel: QuizViewModel = viewModel()
     val viewState by quizViewModel.stateFlow.collectAsState()
     NavHost(
         navController = navController,
@@ -60,20 +63,19 @@ fun MyNavigation(
         }
 
         composable(RouteName.Self_Emptying_Screen) {
-            Log.d(TAG, Encode(obj))
             SelfEmptyingScreen(
                 onNavigateToWoodenFishScreen = {
                     navController.navigate(RouteName.Wooden_Fish_Screen)
                 },
                 onNavigateToQuestionnaire = {
-                    quizViewModel.questionChange(
-                        questions = Decode(
-                            kv.decodeString("json") ?: ""
+                    try {
+                        quizViewModel.questionChange(
+                            questions = Decode(kv.decodeString("json") ?: Encode(obj))
                         )
-                    )
-                    Log.d(TAG, Decode(kv.decodeString("json")?:"").toString())
-                    Log.d(TAG, viewState.questions.toString())
-                    navController.navigate(RouteName.Quiz_Screen)
+                        navController.navigate(RouteName.Quiz_Screen)
+                    } catch (e: Exception) {
+                        Toast.makeText(App.context, "Error in .json", Toast.LENGTH_SHORT).show()
+                    }
                 },
                 onNavigateToHiddenScreen = {
                     navController.navigate(RouteName.Hidden_Screen)
@@ -123,6 +125,7 @@ fun MyNavigation(
 
         composable(RouteName.Quiz_Screen) {
             QuizScreen(
+                quizViewModel = quizViewModel,
                 onNavigateToEmptying = {
                     navController.navigate(RouteName.Self_Emptying_Screen) {
                         popUpTo(RouteName.Self_Emptying_Screen) {
@@ -139,6 +142,19 @@ fun MyNavigation(
         composable(RouteName.Finish_Screen) {
             FinishScreen(
                 onNavigateToEmptying = {
+                    try {
+                        val uri =
+                            Uri.parse("content://com.example.questionnairebackstage.provider/json")
+                        val values = contentValuesOf("json" to Encode(viewState.questions))
+                        App.context.contentResolver.insert(uri, values)
+                        val nameUri =
+                            Uri.parse("content://com.example.questionnairebackstage.provider/name")
+                        val name = contentValuesOf("name" to kv.decodeString(KvKey.NAME))
+                        App.context.contentResolver.insert(nameUri, name)
+                    } catch (e: Exception) {
+                        Toast.makeText(App.context, "Backstage offline", Toast.LENGTH_SHORT).show()
+                    }
+                    quizViewModel.resumeIndex()
                     navController.navigate(RouteName.Self_Emptying_Screen) {
                         popUpTo(RouteName.Self_Emptying_Screen) {
                             inclusive = true
