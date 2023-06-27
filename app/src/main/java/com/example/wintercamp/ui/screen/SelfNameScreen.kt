@@ -58,6 +58,7 @@ import com.example.wintercamp.data.KvKey
 import com.example.wintercamp.data.SelfNameViewModel
 import com.example.wintercamp.network.HttpUtil
 import com.example.wintercamp.questionnaire.component.CustomText
+import com.example.wintercamp.questionnaire.json
 import com.example.wintercamp.ui.component.MyTextField
 import com.example.wintercamp.ui.theme.WinterCampTheme
 import com.tencent.mmkv.MMKV
@@ -67,8 +68,15 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import okhttp3.Call
 import okhttp3.Callback
+import okhttp3.FormBody
+import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
+import org.json.JSONArray
 import java.io.IOException
+import java.lang.Exception
 
 private const val TAG = "SelfNameScreen"
 
@@ -162,10 +170,14 @@ fun SelfNameScreen(
                                         .show()
                                 else
                                     coroutineScope.launch {
-                                        HttpUtil.sendOkHttpRequest(
-                                            "http://192.168.105.157:11454/users",
-                                            object :
-                                                Callback {
+                                        HttpUtil.sendOkHttpPostRequest(
+                                            "http://111.172.11.188:11454/users",
+                                            requestBody = FormBody
+                                                .Builder()
+                                                .add("account", "1585375420@qq.com")
+                                                .add("password","123456")
+                                                .build(),
+                                            callback = object : Callback {
                                                 override fun onFailure(call: Call, e: IOException) {
                                                     Log.d(TAG, e.toString())
                                                 }
@@ -174,11 +186,45 @@ fun SelfNameScreen(
                                                     call: Call,
                                                     response: Response
                                                 ) {
-                                                    val responseData = response.body?.toString()
-                                                    Log.d(TAG, responseData.toString())
+                                                    val responseData = response.body?.string()
+                                                    if (responseData != null) {
+                                                        Log.d(TAG, responseData)
+                                                    }
                                                 }
-
-                                            })
+                                            }
+                                        )
+//                                        HttpUtil.sendOkHttpRequest(
+//                                            "http://192.168.148.157:11454/users",
+//                                            object :
+//                                                Callback {
+//                                                override fun onFailure(call: Call, e: IOException) {
+//                                                    App.online = false
+//                                                    Log.d(TAG, e.toString())
+//                                                }
+//
+//                                                override fun onResponse(
+//                                                    call: Call,
+//                                                    response: Response
+//                                                ) {
+//                                                    val responseData = response.body?.string()
+//                                                    if (responseData != null) {
+//                                                        try {
+//                                                            val jsonArray = JSONArray(responseData)
+//                                                            for (i in 0 until jsonArray.length()) {
+//                                                                val jsonObject =
+//                                                                    jsonArray.getJSONObject(i)
+//                                                                Log.d(
+//                                                                    TAG,
+//                                                                    jsonObject.getString("name")
+//                                                                )
+//                                                            }
+//                                                        } catch (e: Exception) {
+//                                                            Log.d(TAG, e.toString())
+//                                                        }
+//                                                    }
+//                                                }
+//
+//                                            })
                                         kv.encode(KvKey.NAME, value)
                                         complete = true
                                         delay(1500)

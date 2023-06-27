@@ -20,7 +20,9 @@ import androidx.compose.ui.unit.dp
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyTextField(
+    height:Dp = 86.dp,
     horizontalPadding: Dp = 0.dp,
+    bottomPadding:Dp = 34.dp,
     selfCalled: Boolean = false,
     value: String = "",
     onValueChange: (String) -> Unit = {},
@@ -38,8 +40,8 @@ fun MyTextField(
         shape = MaterialTheme.shapes.extraLarge,
         modifier = Modifier
             .fillMaxWidth()
-            .height(86.dp)
-            .padding(start = horizontalPadding, end = horizontalPadding, bottom = 34.dp),
+            .height(height)
+            .padding(start = horizontalPadding, end = horizontalPadding, bottom = bottomPadding),
         value = if (!selfCalled) value else "",
         onValueChange = onValueChange,
         placeholder = {

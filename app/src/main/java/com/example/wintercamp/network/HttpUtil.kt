@@ -4,23 +4,25 @@ import android.util.Log
 import okhttp3.Callback
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.RequestBody
 
 private const val TAG = "HttpUtil"
 
-sealed class RequestMode(
-    val POST: RequestMode
-)
-
 object HttpUtil {
-    fun sendOkHttpRequest(address: String, callback: okhttp3.Callback) {
+    fun sendOkHttpRequest(address: String, callback: Callback) {
         val client = OkHttpClient()
         val request = Request.Builder()
             .url(address)
             .build()
         client.newCall(request).enqueue(callback)
-        Log.d(TAG, "init")
     }
 
-    fun sendOkHttpPostRequest(address: String,callback: Callback,){
+    fun sendOkHttpPostRequest(address: String, callback: Callback, requestBody: RequestBody) {
+        val client = OkHttpClient()
+        val request = Request.Builder()
+            .url(address)
+            .post(requestBody)
+            .build()
+        client.newCall(request).enqueue(callback)
     }
 }
