@@ -72,7 +72,11 @@ fun MyNavigation(
         composable(RouteName.Register_Screen){
             RegisterScreen(
                 onNavigateToLogin = {
-                    navController.navigate(RouteName.Login_Screen)
+                    navController.navigate(RouteName.Login_Screen) {
+                        popUpTo(RouteName.Login_Screen) {
+                            inclusive = true
+                        }
+                    }
                 }
             )
         }

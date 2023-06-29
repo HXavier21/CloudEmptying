@@ -26,7 +26,7 @@ import kotlinx.coroutines.launch
 @Preview
 @Composable
 fun SpecialScreen(
-    screen: String = "",
+    screen: String = "HiddenScreen",
     onNavigateToRegister: () -> Unit = {},
     onNavigateToEmptying: () -> Unit = {}
 ) {

@@ -9,6 +9,7 @@ import com.example.wintercamp.App.Companion.context
 import com.example.wintercamp.R
 import com.example.wintercamp.network.HttpUtil
 import com.example.wintercamp.network.ServerPath
+import com.example.wintercamp.ui.screen.toOperation
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player.REPEAT_MODE_ALL
@@ -49,7 +50,7 @@ sealed class Operation(val message: String) {
 
 class SelfEmptyingViewModel : ViewModel() {
     data class Robot(
-        val robotAccount: String = "",
+        val robotAccount: String = "0",
         val robotX: Dp = 0.dp,
         val robotY: Dp = 0.dp,
         val robotName: String = "",
@@ -122,6 +123,34 @@ class SelfEmptyingViewModel : ViewModel() {
                 robotMessage = operation.message
             )
         }
+    }
+
+    fun operateUserOnline(message: String, stateFlow: MutableStateFlow<Robot>) {
+        val operation = message.toOperation()
+        stateFlow.update {
+            it.copy(
+                robotX = when (operation) {
+                    Operation.Left -> it.robotX - 20.dp
+                    Operation.Move -> (0..300).random().dp
+                    Operation.Right -> it.robotX + 20.dp
+                    else -> it.robotX
+                },
+                robotY = when (operation) {
+                    Operation.Up -> it.robotY - 20.dp
+                    Operation.Move -> (100..500).random().dp
+                    Operation.Down -> it.robotY + 20.dp
+                    else -> it.robotY
+                },
+                robotMessage = message
+            )
+        }
+    }
+
+    fun updateScreen(stateFlow: MutableStateFlow<Robot>) {
+        if (stateFlow.value.robotID == 0)
+            stateFlow.update { it.copy(robotID = 1) }
+        else
+            stateFlow.update { it.copy(robotID = 0) }
     }
 
     fun show(stateFlow: MutableStateFlow<Robot>) {

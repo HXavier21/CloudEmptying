@@ -1,7 +1,9 @@
 package com.example.wintercamp.network
 
+import android.graphics.Paint.Style
 import android.util.Log
 import androidx.compose.animation.core.tween
+import androidx.compose.ui.unit.dp
 import com.example.wintercamp.App
 import com.example.wintercamp.R
 import com.example.wintercamp.data.SelfEmptyingViewModel
@@ -46,16 +48,20 @@ object WebSocket {
                 Log.d(TAG, "收到服务器消息：$text")
                 val users = DecodeUsers(text)
                 for (user in users) {
-                    if (user.type_online == 0) {
+                    if (user.type_online == 0 || user.type_online == 3) {
                         selfEmptyingViewModel.robotList.add(
                             MutableStateFlow(
                                 SelfEmptyingViewModel.Robot(
                                     robotAccount = user.account_online,
-                                    robotName = user.nickname_online
+                                    robotName = user.nickname_online,
+                                    robotX = (0..300).random().dp,
+                                    robotY = (100..500).random().dp
                                 )
                             )
                         )
-                    } else if (user.type_online == 1) {
+                        selfEmptyingViewModel.updateScreen(selfEmptyingViewModel.user)
+                        Log.d(TAG, "add over")
+                    } else if (user.type_online == 2) {
                         for (robot in selfEmptyingViewModel.robotList) {
                             if (robot.value.robotAccount == user.account_online) {
                                 robot.value.robotMessage = user.message_online
@@ -88,14 +94,12 @@ object WebSocket {
 //                                                }
 //                                            }
 
-                                            //else -> {
-                                                runBlocking {
-                                                    selfEmptyingViewModel.randomOperation(
-                                                        robot.value.robotMessage.toOperation(),
-                                                        randomRobot = robot
-                                                    )
-                                                }
-                                            //}
+                                        //else -> {
+                                        selfEmptyingViewModel.operateUserOnline(
+                                            user.message_online,
+                                            robot
+                                        )
+                                        //}
                                         //}
                                         delay(2000)
                                         hide(robot)
@@ -103,10 +107,11 @@ object WebSocket {
                                 }
                             }
                         }
-                    } else {
+                    } else if (user.type_online == 1) {
                         for (robot in selfEmptyingViewModel.robotList) {
                             if (robot.value.robotAccount == user.account_online) {
                                 selfEmptyingViewModel.robotList.remove(robot)
+                                selfEmptyingViewModel.updateScreen(selfEmptyingViewModel.user)
                             }
                         }
                     }
@@ -127,6 +132,16 @@ object WebSocket {
         webSocket.close(1000, "close")
     }
 
+    fun webSocketSendMessage(account: String, message: String) {
+        val user = EncodeUser(
+            UserOnline(
+                account_online = account,
+                message_online = message,
+                type_online = 1
+            )
+        )
+        webSocket.send(user)
+    }
 
 }
 

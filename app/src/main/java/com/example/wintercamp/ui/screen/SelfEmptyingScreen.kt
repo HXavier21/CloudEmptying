@@ -2,6 +2,7 @@ package com.example.wintercamp.ui.screen
 
 import android.util.Log
 import android.view.LayoutInflater
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
@@ -39,6 +40,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.wintercamp.ActivityCollector
 import com.example.wintercamp.App
 import com.example.wintercamp.App.Companion.context
 import com.example.wintercamp.R
@@ -82,13 +84,18 @@ fun SelfEmptyingScreen(
             if (App.guest_mode) {
                 initAll("Guest")
             } else {
-                WebSocket.webSocketConnect(KvKey.ACCOUNT, selfEmptyingViewModel)
+                kv.decodeString(KvKey.ACCOUNT)
+                    ?.let { WebSocket.webSocketConnect(it, selfEmptyingViewModel) }
                 initAll(kv.decodeString(KvKey.NAME) ?: KvKey.NAME)
             }
         }
         onDispose {
             selfEmptyingViewModel.stopPlaying()
         }
+    }
+    BackHandler {
+        WebSocket.webSocketDisconnect()
+        ActivityCollector.finishAll()
     }
     WinterCampTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
@@ -178,6 +185,14 @@ fun SelfEmptyingScreen(
                                 .clickable {
                                     coroutineScope.launch {
                                         if (selfText != "") {
+                                            kv
+                                                .decodeString(KvKey.ACCOUNT)
+                                                ?.let {
+                                                    WebSocket.webSocketSendMessage(
+                                                        it,
+                                                        selfText
+                                                    )
+                                                }
                                             selfEmptyingViewModel.show(selfEmptyingViewModel.user)
                                             when (selfText) {
                                                 "Swell", "swell", "我膨胀了" -> {
@@ -228,7 +243,7 @@ fun SelfEmptyingScreen(
                                         delay(3000)
                                         coroutineScope.launch {
                                             with(selfEmptyingViewModel) {
-                                                randomRobot = (0..robotList.size - 1).random()
+                                                randomRobot = (0..2).random()
                                                 show(robotList[randomRobot])
                                                 randomOperation(randomRobot = robotList[randomRobot])
                                                 delay(2000)

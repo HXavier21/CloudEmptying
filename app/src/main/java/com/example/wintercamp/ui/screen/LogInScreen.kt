@@ -3,6 +3,7 @@ package com.example.wintercamp.ui.screen
 import android.os.Build
 import android.util.Log
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -42,6 +43,7 @@ import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
 import coil.request.ImageRequest
 import coil.size.Size
+import com.example.wintercamp.ActivityCollector
 import com.example.wintercamp.App
 import com.example.wintercamp.App.Companion.context
 import com.example.wintercamp.R
@@ -59,6 +61,8 @@ import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.FormBody
 import okhttp3.Response
+import org.json.JSONArray
+import org.json.JSONObject
 import java.io.IOException
 
 private const val TAG = "LogInScreen"
@@ -87,6 +91,9 @@ fun LogInScreen(
         kv.decodeString(KvKey.ACCOUNT)?.let { email = it }
         onDispose {
         }
+    }
+    BackHandler {
+        ActivityCollector.finishAll()
     }
     Surface(
         Modifier.fillMaxSize(),
@@ -166,12 +173,17 @@ fun LogInScreen(
                         coroutineScope.launch {
                             complete = !complete
                             delay(1500)
-                            if (responseData != " ") {
-                                kv.encode(KvKey.ACCOUNT, email)
-                                kv.encode(KvKey.PASSWORD, password)
-                                kv.encode(KvKey.NAME,responseData)
+                            try {
+                                val jsonObject = responseData?.let { JSONObject(it) }
+                                if (jsonObject != null) {
+                                    Log.d(TAG, jsonObject.getString("nickname"))
+                                    kv.encode(KvKey.ACCOUNT, email)
+                                    kv.encode(KvKey.PASSWORD, password)
+                                    kv.encode(KvKey.NAME, jsonObject.getString("nickname"))
+                                }
                                 onNavigateToEmptying()
-                            } else {
+                            } catch (e: Exception) {
+                                Log.d(TAG, e.toString())
                                 complete = !complete
                                 Toast.makeText(
                                     context,
