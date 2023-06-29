@@ -1,5 +1,6 @@
 package com.example.wintercamp.ui.component
 
+import android.text.BoringLayout
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -71,7 +72,8 @@ fun MyLabelTextField(
     onValueChange: (String) -> Unit = {},
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     trailingIcon: @Composable (() -> Unit)? = {},
-    label: @Composable (() -> Unit)? = {}
+    label: @Composable (() -> Unit)? = {},
+    enabled:Boolean = true
 ) {
     val isFocused = remember { mutableStateOf(false) }
 
@@ -101,6 +103,7 @@ fun MyLabelTextField(
         onValueChange = onValueChange,
         label = label,
         trailingIcon = trailingIcon,
-        keyboardOptions = keyboardOptions
+        keyboardOptions = keyboardOptions,
+        enabled = enabled
     )
 }

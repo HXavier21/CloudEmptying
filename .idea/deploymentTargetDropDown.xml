@@ -2,6 +2,9 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
+      <entry key="LogInScreen">
+        <State />
+      </entry>
       <entry key="MyTextField">
         <State />
       </entry>

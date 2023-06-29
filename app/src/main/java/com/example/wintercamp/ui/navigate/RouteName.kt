@@ -9,5 +9,6 @@ object RouteName {
     const val Finish_Screen = "FinishScreen"
     const val Beginning_Screen = "BeginningScreen"
     const val Hidden_Screen = "HiddenScreen"
-    const val Register_Screen= "RegisterScreen"
+    const val Register_Screen = "RegisterScreen"
+    const val Login_Screen = "LoginScreen"
 }
