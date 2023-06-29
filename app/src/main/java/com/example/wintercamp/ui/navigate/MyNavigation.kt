@@ -20,6 +20,7 @@ import com.example.wintercamp.questionnaire.obj
 import com.example.wintercamp.questionnaire.screen.FinishScreen
 import com.example.wintercamp.questionnaire.screen.QuizScreen
 import com.example.wintercamp.ui.screen.DeepBreathScreen
+import com.example.wintercamp.ui.screen.RegisterScreen
 import com.example.wintercamp.ui.screen.SelfEmptyingScreen
 import com.example.wintercamp.ui.screen.SelfNameScreen
 import com.example.wintercamp.ui.screen.SpecialScreen
@@ -44,12 +45,20 @@ fun MyNavigation(
         composable(RouteName.Beginning_Screen) {
             SpecialScreen(
                 screen = RouteName.Beginning_Screen,
-                onNavigateToSelfName = {
-                    navController.navigate(RouteName.Self_Name_Screen) {
-                        popUpTo(RouteName.Self_Name_Screen) {
+                onNavigateToRegister = {
+                    navController.navigate(RouteName.Register_Screen) {
+                        popUpTo(RouteName.Register_Screen) {
                             inclusive = true
                         }
                     }
+                }
+            )
+        }
+
+        composable(RouteName.Register_Screen){
+            RegisterScreen(
+                onNavigateToEmptying = {
+                    navController.navigate(RouteName.Self_Emptying_Screen)
                 }
             )
         }

@@ -1,16 +1,25 @@
 package com.example.wintercamp.data
 
 import android.net.Uri
+import android.util.Log
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import com.example.wintercamp.App.Companion.context
 import com.example.wintercamp.R
+import com.example.wintercamp.network.HttpUtil
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player.REPEAT_MODE_ALL
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
+import okhttp3.Call
+import okhttp3.Callback
+import okhttp3.Response
+import org.json.JSONArray
+import java.io.IOException
+
+private const val TAG = "SelfEmptyingViewModel"
 
 sealed class Operation(val message: String) {
     object Up : Operation(context.getString(R.string.go_up))
@@ -43,6 +52,7 @@ class SelfEmptyingViewModel : ViewModel() {
         val robotY: Dp = 0.dp,
         val robotName: String = "",
         val robotMessage: String = "",
+        val robotID: Int = 0,
         val robotVisible: Boolean = false
     )
 
@@ -74,7 +84,7 @@ class SelfEmptyingViewModel : ViewModel() {
     fun userOperation(operation: Operation) =
         operate(operation = operation, stateFlow = user)
 
-    fun randomOperation(operation: Operation = Operation.getRandom(),randomRobot:Int) =
+    fun randomOperation(operation: Operation = Operation.getRandom(), randomRobot: Int) =
         operate(operation = operation, stateFlow = robotList[randomRobot])
 
     private fun operate(operation: Operation, stateFlow: MutableStateFlow<Robot>) {
@@ -125,4 +135,34 @@ class SelfEmptyingViewModel : ViewModel() {
             )
         }
     }
+
+    fun getUsersRequest() {
+        HttpUtil.sendOkHttpRequest(
+            "http://192.168.48.157:11455/users",
+            object : Callback {
+                override fun onFailure(call: Call, e: IOException) {
+                    Log.d(TAG, e.toString())
+                }
+
+                override fun onResponse(
+                    call: Call,
+                    response: Response
+                ) {
+                    val responseData = response.body?.string()
+                    if (responseData != null) {
+                        try {
+                            val jsonArray = JSONArray(responseData)
+                            for (i in 0 until jsonArray.length()) {
+                                val jsonObject = jsonArray.getJSONObject(i)
+                                Log.d(TAG, jsonObject.getString("name"))
+                            }
+                        } catch (e: Exception) {
+                            Log.d(TAG, e.toString())
+                        }
+                    }
+                }
+
+            })
+    }
+
 }

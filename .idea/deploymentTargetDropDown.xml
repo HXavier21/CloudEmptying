@@ -2,6 +2,12 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
+      <entry key="MyTextField">
+        <State />
+      </entry>
+      <entry key="RegisterScreen">
+        <State />
+      </entry>
       <entry key="app">
         <State />
       </entry>

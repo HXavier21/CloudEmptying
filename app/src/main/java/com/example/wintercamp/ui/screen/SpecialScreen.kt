@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.rememberCoroutineScope
@@ -18,9 +17,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.wintercamp.R
-import com.example.wintercamp.data.DEFAULT_REPEAT_TIME
-import com.example.wintercamp.data.DEFAULt_REPEAT_DURATION
-import com.example.wintercamp.data.KvKey
 import com.example.wintercamp.questionnaire.component.CustomText
 import com.example.wintercamp.ui.navigate.RouteName
 import com.example.wintercamp.ui.theme.WinterCampTheme
@@ -31,7 +27,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun SpecialScreen(
     screen: String = "",
-    onNavigateToSelfName: () -> Unit = {},
+    onNavigateToRegister: () -> Unit = {},
     onNavigateToEmptying: () -> Unit = {}
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -39,7 +35,7 @@ fun SpecialScreen(
         coroutineScope.launch {
             delay(3000)
             when (screen) {
-                RouteName.Beginning_Screen -> onNavigateToSelfName()
+                RouteName.Beginning_Screen -> onNavigateToRegister()
                 RouteName.Hidden_Screen -> onNavigateToEmptying()
                 else -> {}
             }

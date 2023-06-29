@@ -6,7 +6,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,12 +13,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.windowInsetsEndWidth
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
@@ -42,12 +38,12 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.wintercamp.App
 import com.example.wintercamp.App.Companion.context
 import com.example.wintercamp.R
 import com.example.wintercamp.data.KvKey
 import com.example.wintercamp.data.Operation
 import com.example.wintercamp.data.SelfEmptyingViewModel
+import com.example.wintercamp.network.WebSocket
 import com.example.wintercamp.questionnaire.component.CustomText
 import com.example.wintercamp.ui.component.MyTextField
 import com.example.wintercamp.ui.component.SelfEmptyingItem
@@ -80,6 +76,8 @@ fun SelfEmptyingScreen(
     DisposableEffect(Unit) {
         selfEmptyingViewModel.run {
             startPlaying()
+            WebSocket()
+            selfEmptyingViewModel.getUsersRequest()
             initAll(kv.decodeString(KvKey.NAME) ?: KvKey.NAME)
         }
 
@@ -160,7 +158,7 @@ fun SelfEmptyingScreen(
                     selfCalled = user.robotVisible,
                     value = selfText,
                     onValueChange = { selfText = it },
-                    label = if (!user.robotVisible) stringResource(R.string.input_to_find_yourself)
+                    content = if (!user.robotVisible) stringResource(R.string.input_to_find_yourself)
                     else stringResource(R.string.find_it_try_to_poke),
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                     trailingIcon = {

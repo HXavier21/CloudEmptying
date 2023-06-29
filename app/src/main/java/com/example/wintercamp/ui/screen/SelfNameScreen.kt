@@ -1,8 +1,6 @@
 package com.example.wintercamp.ui.screen
 
 import android.os.Build
-import android.util.Log
-import android.view.LayoutInflater
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
@@ -14,14 +12,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
@@ -29,7 +25,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,7 +37,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.ImageLoader
 import coil.compose.rememberAsyncImagePainter
@@ -52,31 +46,16 @@ import coil.request.ImageRequest
 import coil.size.Size
 import com.example.wintercamp.ActivityCollector
 import com.example.wintercamp.App
-import com.example.wintercamp.MainActivity
 import com.example.wintercamp.R
 import com.example.wintercamp.data.KvKey
 import com.example.wintercamp.data.SelfNameViewModel
-import com.example.wintercamp.network.HttpUtil
 import com.example.wintercamp.questionnaire.component.CustomText
-import com.example.wintercamp.questionnaire.json
 import com.example.wintercamp.ui.component.MyTextField
 import com.example.wintercamp.ui.theme.WinterCampTheme
 import com.tencent.mmkv.MMKV
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import okhttp3.Call
-import okhttp3.Callback
-import okhttp3.FormBody
-import okhttp3.MediaType
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.RequestBody
-import okhttp3.RequestBody.Companion.toRequestBody
-import okhttp3.Response
-import org.json.JSONArray
-import java.io.IOException
-import java.lang.Exception
 
 private const val TAG = "SelfNameScreen"
 
@@ -170,61 +149,9 @@ fun SelfNameScreen(
                                         .show()
                                 else
                                     coroutineScope.launch {
-                                        HttpUtil.sendOkHttpPostRequest(
-                                            "http://111.172.11.188:11454/users",
-                                            requestBody = FormBody
-                                                .Builder()
-                                                .add("account", "1585375420@qq.com")
-                                                .add("password","123456")
-                                                .build(),
-                                            callback = object : Callback {
-                                                override fun onFailure(call: Call, e: IOException) {
-                                                    Log.d(TAG, e.toString())
-                                                }
-
-                                                override fun onResponse(
-                                                    call: Call,
-                                                    response: Response
-                                                ) {
-                                                    val responseData = response.body?.string()
-                                                    if (responseData != null) {
-                                                        Log.d(TAG, responseData)
-                                                    }
-                                                }
-                                            }
-                                        )
-//                                        HttpUtil.sendOkHttpRequest(
-//                                            "http://192.168.148.157:11454/users",
-//                                            object :
-//                                                Callback {
-//                                                override fun onFailure(call: Call, e: IOException) {
-//                                                    App.online = false
-//                                                    Log.d(TAG, e.toString())
-//                                                }
-//
-//                                                override fun onResponse(
-//                                                    call: Call,
-//                                                    response: Response
-//                                                ) {
-//                                                    val responseData = response.body?.string()
-//                                                    if (responseData != null) {
-//                                                        try {
-//                                                            val jsonArray = JSONArray(responseData)
-//                                                            for (i in 0 until jsonArray.length()) {
-//                                                                val jsonObject =
-//                                                                    jsonArray.getJSONObject(i)
-//                                                                Log.d(
-//                                                                    TAG,
-//                                                                    jsonObject.getString("name")
-//                                                                )
-//                                                            }
-//                                                        } catch (e: Exception) {
-//                                                            Log.d(TAG, e.toString())
-//                                                        }
-//                                                    }
-//                                                }
-//
-//                                            })
+                                        if (App.online) {
+                                            selfNameViewModel.sentNameRequest()
+                                        }
                                         kv.encode(KvKey.NAME, value)
                                         complete = true
                                         delay(1500)
