@@ -49,18 +49,31 @@ sealed class Operation(val message: String) {
 
 class SelfEmptyingViewModel : ViewModel() {
     data class Robot(
+        val robotAccount: String = "",
         val robotX: Dp = 0.dp,
         val robotY: Dp = 0.dp,
         val robotName: String = "",
-        val robotMessage: String = "",
+        var robotMessage: String = "",
         val robotID: Int = 0,
         val robotVisible: Boolean = false
     )
 
     val user: MutableStateFlow<Robot> = MutableStateFlow(Robot())
-    var robotList: List<MutableStateFlow<Robot>> = emptyList()
+    var robotList: MutableList<MutableStateFlow<Robot>>
     val exoPlayer1 = ExoPlayer.Builder(context).build()
     val exoPlayer2 = ExoPlayer.Builder(context).build()
+
+    init {
+        robotList = robotNames.map { name ->
+            MutableStateFlow(
+                Robot(
+                    robotName = name,
+                    robotX = (0..300).random().dp,
+                    robotY = (100..500).random().dp
+                )
+            )
+        }.toMutableList()
+    }
 
     fun stopPlaying() {
         exoPlayer1.stop()
@@ -85,8 +98,11 @@ class SelfEmptyingViewModel : ViewModel() {
     fun userOperation(operation: Operation) =
         operate(operation = operation, stateFlow = user)
 
-    fun randomOperation(operation: Operation = Operation.getRandom(), randomRobot: Int) =
-        operate(operation = operation, stateFlow = robotList[randomRobot])
+    fun randomOperation(
+        operation: Operation = Operation.getRandom(),
+        randomRobot: MutableStateFlow<Robot>
+    ) =
+        operate(operation = operation, stateFlow = randomRobot)
 
     private fun operate(operation: Operation, stateFlow: MutableStateFlow<Robot>) {
         stateFlow.update {
@@ -119,15 +135,6 @@ class SelfEmptyingViewModel : ViewModel() {
     fun initAll(
         selfName: String,
     ) {
-        robotList = robotNames.map { name ->
-            MutableStateFlow(
-                Robot(
-                    robotName = name,
-                    robotX = (0..300).random().dp,
-                    robotY = (100..500).random().dp
-                )
-            )
-        }
         user.update {
             it.copy(
                 robotX = (0..300).random().dp,
@@ -163,7 +170,8 @@ class SelfEmptyingViewModel : ViewModel() {
                     }
                 }
 
-            })
+            }
+        )
     }
 
 }

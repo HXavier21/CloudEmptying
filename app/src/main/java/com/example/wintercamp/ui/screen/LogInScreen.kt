@@ -166,9 +166,10 @@ fun LogInScreen(
                         coroutineScope.launch {
                             complete = !complete
                             delay(1500)
-                            if (responseData == "1") {
+                            if (responseData != " ") {
                                 kv.encode(KvKey.ACCOUNT, email)
                                 kv.encode(KvKey.PASSWORD, password)
+                                kv.encode(KvKey.NAME,responseData)
                                 onNavigateToEmptying()
                             } else {
                                 complete = !complete

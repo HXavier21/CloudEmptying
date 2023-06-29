@@ -11,10 +11,10 @@ val json = Json {
 
 @Serializable
 class UserOnline(
-    val account: String = "",
-    val nickname: String = "",
-    var message: String = "",
-    var type: Int = -1
+    val account_online: String = "",
+    val nickname_online: String = "",
+    var message_online: String = "",
+    var type_online: Int = -1
 )
 
 fun DecodeUsers(jsonimport: String): List<UserOnline> {

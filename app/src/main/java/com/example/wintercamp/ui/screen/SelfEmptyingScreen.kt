@@ -1,5 +1,6 @@
 package com.example.wintercamp.ui.screen
 
+import android.util.Log
 import android.view.LayoutInflater
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
@@ -55,6 +56,7 @@ import com.tencent.mmkv.MMKV
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+private const val TAG = "SelfEmptyingScreen"
 
 @Composable
 fun SelfEmptyingScreen(
@@ -80,7 +82,7 @@ fun SelfEmptyingScreen(
             if (App.guest_mode) {
                 initAll("Guest")
             } else {
-                WebSocket.webSocketConnect(KvKey.ACCOUNT)
+                WebSocket.webSocketConnect(KvKey.ACCOUNT, selfEmptyingViewModel)
                 initAll(kv.decodeString(KvKey.NAME) ?: KvKey.NAME)
             }
         }
@@ -140,7 +142,7 @@ fun SelfEmptyingScreen(
                                     )
                                     selfScale.animateTo(1f)
                                 }
-                                WebSocket.webSocketDisconnect()
+                                if (!App.guest_mode) WebSocket.webSocketDisconnect()
                                 onNavigateToWoodenFishScreen()
                             },
                         visible = user.robotVisible,
@@ -228,7 +230,7 @@ fun SelfEmptyingScreen(
                                             with(selfEmptyingViewModel) {
                                                 randomRobot = (0..robotList.size - 1).random()
                                                 show(robotList[randomRobot])
-                                                randomOperation(randomRobot = randomRobot)
+                                                randomOperation(randomRobot = robotList[randomRobot])
                                                 delay(2000)
                                                 hide(robotList[randomRobot])
                                             }
