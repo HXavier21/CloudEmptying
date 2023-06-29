@@ -37,9 +37,11 @@ import androidx.compose.ui.unit.dp
 import com.example.wintercamp.ActivityCollector
 import com.example.wintercamp.App
 import com.example.wintercamp.network.HttpUtil
+import com.example.wintercamp.network.ServerPath
 import com.example.wintercamp.questionnaire.component.CustomText
 import com.example.wintercamp.ui.component.MyLabelTextField
 import com.example.wintercamp.ui.theme.WinterCampTheme
+import com.tencent.mmkv.MMKV
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -56,6 +58,7 @@ private const val TAG = "RegisterScreen"
 fun RegisterScreen(
     onNavigateToLogin: () -> Unit = {}
 ) {
+    val kv = MMKV.defaultMMKV()
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
     var email by remember { mutableStateOf("") }
@@ -110,7 +113,7 @@ fun RegisterScreen(
                         onClick = {
                             send_code = !send_code
                             HttpUtil.sendOkHttpPostRequest(
-                                "http://111.172.11.188:11455/send_verification_code",
+                                "${ServerPath.httpPath}/send_verification_code",
                                 requestBody = FormBody
                                     .Builder()
                                     .add("email", email)
@@ -204,17 +207,15 @@ fun RegisterScreen(
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(172, 204, 248)
                     ),
-                    enabled = if (
-                        code == verification_code &&
-                        password == password2 &&
-                        nickName != "" &&
-                        code != "" && password != ""
-                    ) true else false,
+                    enabled = code == verification_code &&
+                    password == password2 &&
+                    nickName != "" &&
+                    code != "" && password != "",
                     onClick = {
                         runBlocking {
                             var responseData: String? = null
                             HttpUtil.sendOkHttpPostRequest(
-                                "http://111.172.11.188:11455/addusers",
+                                "${ServerPath.httpPath}/addusers",
                                 requestBody = FormBody
                                     .Builder()
                                     .add("account", email)

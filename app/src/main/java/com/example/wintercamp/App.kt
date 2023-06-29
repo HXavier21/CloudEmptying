@@ -17,7 +17,7 @@ class App : Application() {
     }
 
     companion object {
-        var online = true
+        var guest_mode = false
         @SuppressLint("StaticFieldLeak")
         lateinit var context: Context
     }

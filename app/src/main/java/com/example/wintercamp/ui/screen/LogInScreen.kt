@@ -21,6 +21,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,11 +42,16 @@ import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
 import coil.request.ImageRequest
 import coil.size.Size
+import com.example.wintercamp.App
 import com.example.wintercamp.App.Companion.context
 import com.example.wintercamp.R
+import com.example.wintercamp.data.KvKey
 import com.example.wintercamp.network.HttpUtil
+import com.example.wintercamp.network.ServerPath
+import com.example.wintercamp.network.WebSocket
 import com.example.wintercamp.questionnaire.component.CustomText
 import com.example.wintercamp.ui.component.MyLabelTextField
+import com.tencent.mmkv.MMKV
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -63,6 +69,7 @@ fun LogInScreen(
     onNavigateToEmptying: () -> Unit = {},
     onNavigateToRegister: () -> Unit = {}
 ) {
+    val kv = MMKV.defaultMMKV()
     val coroutineScope = rememberCoroutineScope()
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -75,6 +82,12 @@ fun LogInScreen(
                 add(GifDecoder.Factory())
             }
         }.build()
+
+    DisposableEffect(Unit) {
+        kv.decodeString(KvKey.ACCOUNT)?.let { email = it }
+        onDispose {
+        }
+    }
     Surface(
         Modifier.fillMaxSize(),
         color = Color.White
@@ -130,7 +143,7 @@ fun LogInScreen(
                     runBlocking {
                         var responseData: String? = null
                         HttpUtil.sendOkHttpPostRequest(
-                            "http://111.172.11.188:11455/login",
+                            "${ServerPath.httpPath}/login",
                             requestBody = FormBody
                                 .Builder()
                                 .add("account", email)
@@ -153,8 +166,11 @@ fun LogInScreen(
                         coroutineScope.launch {
                             complete = !complete
                             delay(1500)
-                            if (responseData == "1") onNavigateToEmptying()
-                            else {
+                            if (responseData == "1") {
+                                kv.encode(KvKey.ACCOUNT, email)
+                                kv.encode(KvKey.PASSWORD, password)
+                                onNavigateToEmptying()
+                            } else {
                                 complete = !complete
                                 Toast.makeText(
                                     context,
@@ -184,7 +200,8 @@ fun LogInScreen(
                     color = Color.Gray,
                     style = MaterialTheme.typography.bodySmall
                 )
-                CustomText(text = "Sign up",
+                CustomText(
+                    text = "Sign up",
                     color = Color.Black,
                     style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.clickable(
@@ -195,8 +212,26 @@ fun LogInScreen(
                     }
                 )
             }
+            Spacer(modifier = Modifier.height(5.dp))
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                CustomText(
+                    text = "Or try guest mode first",
+                    color = Color.Black,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = rememberRipple()
+                    ) {
+                        App.guest_mode = true
+                        onNavigateToEmptying()
+                    }
+                )
+            }
             Spacer(
-                modifier = Modifier.height(if (complete) 113.dp else 130.dp)
+                modifier = Modifier.height(if (complete) 103.dp else 120.dp)
             )
             Image(
                 modifier = Modifier

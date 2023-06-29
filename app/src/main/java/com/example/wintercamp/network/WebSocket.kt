@@ -1,6 +1,8 @@
 package com.example.wintercamp.network
 
 import android.util.Log
+import com.example.wintercamp.questionnaire.EncodeUser
+import com.example.wintercamp.questionnaire.UserOnline
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
@@ -9,35 +11,45 @@ import okhttp3.WebSocketListener
 
 private const val TAG = "WebSocket"
 
-fun WebSocket() {
-    val client = OkHttpClient()
+object WebSocket{
 
-    val request = Request.Builder()
-        .url("http://192.168.84.157:11454") // 使用模拟的 WebSocket 服务器地址
-        .build()
+    lateinit var webSocket:WebSocket
 
-    val webSocket = client.newWebSocket(request, object : WebSocketListener() {
-        override fun onOpen(webSocket: WebSocket, response: Response) {
-            Log.d(TAG, "WebSocket 连接已打开")
+    fun webSocketConnect(account:String= "") {
+        val client = OkHttpClient()
 
-            // 连接成功后，可以发送消息
-            webSocket.send("Hello, Sir!")
-        }
+        val request = Request.Builder()
+            .url(ServerPath.wsPath)
+            .build()
 
-        override fun onMessage(webSocket: WebSocket, text: String) {
-            Log.d(TAG, "收到服务器消息：$text")
+        webSocket = client.newWebSocket(request, object : WebSocketListener() {
+            override fun onOpen(webSocket: WebSocket, response: Response) {
+                Log.d(TAG, "WebSocket 连接已打开")
+                val user = EncodeUser(UserOnline(account = account, type = 0))
+                Log.d(TAG, user)
+                webSocket.send(user)
+            }
 
-            // 在这里处理接收到的消息
-        }
+            override fun onMessage(webSocket: WebSocket, text: String) {
+                Log.d(TAG, "收到服务器消息：$text")
 
-        override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
-            Log.d(TAG, "WebSocket 连接已关闭")
-        }
+                // 在这里处理接收到的消息
+            }
 
-        override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
-            Log.d(TAG, "WebSocket 连接失败：${t.message}")
-        }
-    })
+            override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
+                Log.d(TAG, "WebSocket 连接已关闭")
+            }
+
+            override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
+                Log.d(TAG, "WebSocket 连接失败：${t.message}")
+            }
+        })
+    }
+
+    fun webSocketDisconnect(){
+        webSocket.close(1000,"close")
+    }
+
+
 }
-
 

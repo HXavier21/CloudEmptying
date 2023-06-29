@@ -35,7 +35,7 @@ class JsonProvider:ContentProvider(){
     override fun insert(uri: Uri, values: ContentValues?): Uri? {
         when(uriMatcher.match(uri)){
             jsonIndex->{
-                kv.encode("json",values?.getAsString("json")?: Encode(obj))
+                kv.encode("json",values?.getAsString("json")?: com.example.wintercamp.network.Encode(obj))
                 Log.d(TAG, kv.decodeString("json")?:"null")
             }
         }

@@ -149,7 +149,7 @@ fun SelfNameScreen(
                                         .show()
                                 else
                                     coroutineScope.launch {
-                                        if (App.online) {
+                                        if (!App.guest_mode) {
                                             selfNameViewModel.sentNameRequest()
                                         }
                                         kv.encode(KvKey.NAME, value)

@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import com.example.wintercamp.App.Companion.context
 import com.example.wintercamp.R
 import com.example.wintercamp.network.HttpUtil
+import com.example.wintercamp.network.ServerPath
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player.REPEAT_MODE_ALL
@@ -138,7 +139,7 @@ class SelfEmptyingViewModel : ViewModel() {
 
     fun getUsersRequest() {
         HttpUtil.sendOkHttpRequest(
-            "http://192.168.48.157:11455/users",
+            "${ServerPath.httpPath}/users",
             object : Callback {
                 override fun onFailure(call: Call, e: IOException) {
                     Log.d(TAG, e.toString())

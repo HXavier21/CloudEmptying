@@ -11,6 +11,7 @@ import coil.ImageLoader
 import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
 import com.example.wintercamp.App.Companion.context
+import com.example.wintercamp.network.WebSocket
 import com.example.wintercamp.ui.navigate.MyNavigation
 
 val LocalImageLoader = staticCompositionLocalOf {
@@ -41,6 +42,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+        WebSocket.webSocketDisconnect()
         ActivityCollector.removeActivity(this)
     }
 

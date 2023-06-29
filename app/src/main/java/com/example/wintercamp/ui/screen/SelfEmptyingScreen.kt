@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.wintercamp.App
 import com.example.wintercamp.App.Companion.context
 import com.example.wintercamp.R
 import com.example.wintercamp.data.KvKey
@@ -76,11 +77,13 @@ fun SelfEmptyingScreen(
     DisposableEffect(Unit) {
         selfEmptyingViewModel.run {
             startPlaying()
-            WebSocket()
-            selfEmptyingViewModel.getUsersRequest()
-            initAll(kv.decodeString(KvKey.NAME) ?: KvKey.NAME)
+            if (App.guest_mode) {
+                initAll("Guest")
+            } else {
+                WebSocket.webSocketConnect(KvKey.ACCOUNT)
+                initAll(kv.decodeString(KvKey.NAME) ?: KvKey.NAME)
+            }
         }
-
         onDispose {
             selfEmptyingViewModel.stopPlaying()
         }
@@ -98,33 +101,6 @@ fun SelfEmptyingScreen(
                 val userX by animateDpAsState(targetValue = user.robotX, animationSpec)
                 val userY by animateDpAsState(targetValue = user.robotY, animationSpec)
                 Box(modifier = Modifier.weight(1f)) {
-                    SelfEmptyingItem(
-                        modifier = Modifier
-                            .offset(userX, userY)
-                            .scale(selfScale.value)
-                            .clickable(
-                                indication = null,
-                                interactionSource = remember {
-                                    MutableInteractionSource()
-                                }
-                            ) {
-                                coroutineScope.launch {
-                                    selfScale.animateTo(
-                                        1.1f,
-                                        tween(1000)
-                                    )
-                                    selfScale.animateTo(1f)
-                                }
-                                onNavigateToWoodenFishScreen()
-                            },
-                        visible = user.robotVisible,
-                        text = selfText,
-                        name = user.robotName,
-                        image = when (selfText) {
-                            stringResource(R.string.i_am_winking) -> R.drawable.wink
-                            else -> R.drawable.self_emptying
-                        }
-                    )
                     for (stateFlow in stateFlows) {
                         stateFlow.collectAsState().value.run {
                             val xdp by animateDpAsState(targetValue = robotX, animationSpec)
@@ -147,6 +123,34 @@ fun SelfEmptyingScreen(
                             )
                         }
                     }
+                    SelfEmptyingItem(
+                        modifier = Modifier
+                            .offset(userX, userY)
+                            .scale(selfScale.value)
+                            .clickable(
+                                indication = null,
+                                interactionSource = remember {
+                                    MutableInteractionSource()
+                                }
+                            ) {
+                                coroutineScope.launch {
+                                    selfScale.animateTo(
+                                        1.1f,
+                                        tween(1000)
+                                    )
+                                    selfScale.animateTo(1f)
+                                }
+                                WebSocket.webSocketDisconnect()
+                                onNavigateToWoodenFishScreen()
+                            },
+                        visible = user.robotVisible,
+                        text = selfText,
+                        name = user.robotName,
+                        image = when (selfText) {
+                            stringResource(R.string.i_am_winking) -> R.drawable.wink
+                            else -> R.drawable.self_emptying
+                        }
+                    )
                 }
                 CustomText(
                     modifier = Modifier.padding(start = 20.dp, bottom = 5.dp),

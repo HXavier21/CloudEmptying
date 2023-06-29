@@ -13,8 +13,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.wintercamp.App
 import com.example.wintercamp.data.KvKey
-import com.example.wintercamp.questionnaire.Decode
-import com.example.wintercamp.questionnaire.Encode
+import com.example.wintercamp.network.Decode
+import com.example.wintercamp.network.Encode
+import com.example.wintercamp.questionnaire.DecodeUsers
+import com.example.wintercamp.questionnaire.EncodeUser
 import com.example.wintercamp.questionnaire.QuizViewModel
 import com.example.wintercamp.questionnaire.obj
 import com.example.wintercamp.questionnaire.screen.FinishScreen
