@@ -94,7 +94,7 @@ fun SelfEmptyingScreen(
         }
     }
     BackHandler {
-        WebSocket.webSocketDisconnect()
+        if (!App.guest_mode) WebSocket.webSocketDisconnect()
         ActivityCollector.finishAll()
     }
     WinterCampTheme {
@@ -185,14 +185,16 @@ fun SelfEmptyingScreen(
                                 .clickable {
                                     coroutineScope.launch {
                                         if (selfText != "") {
-                                            kv
-                                                .decodeString(KvKey.ACCOUNT)
-                                                ?.let {
-                                                    WebSocket.webSocketSendMessage(
-                                                        it,
-                                                        selfText
-                                                    )
-                                                }
+                                            if (!App.guest_mode) {
+                                                kv
+                                                    .decodeString(KvKey.ACCOUNT)
+                                                    ?.let {
+                                                        WebSocket.webSocketSendMessage(
+                                                            it,
+                                                            selfText
+                                                        )
+                                                    }
+                                            }
                                             selfEmptyingViewModel.show(selfEmptyingViewModel.user)
                                             when (selfText) {
                                                 "Swell", "swell", "我膨胀了" -> {
