@@ -19,7 +19,7 @@
 
         <provider
             android:name=".questionnaire.JsonProvider"
-            android:authorities="com.example.wintercamp.questionnaire.provider"
+            android:authorities="com.example.cloudemptying.questionnaire.provider"
             android:enabled="true"
             android:exported="true">
         </provider>
