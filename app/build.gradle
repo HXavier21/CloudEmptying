@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace 'com.example.wintercamp'
+    namespace 'com.example.cloudemptying'
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.example.wintercamp"
+        applicationId "com.example.cloudemptying"
         minSdk 24
         targetSdk 33
         versionCode 1
